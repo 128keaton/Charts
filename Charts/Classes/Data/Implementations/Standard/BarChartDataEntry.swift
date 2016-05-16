@@ -43,6 +43,12 @@ public class BarChartDataEntry: ChartDataEntry
         super.init(value: value, xIndex: xIndex)
     }
     
+    /// Constructor for normal bars, with a label not attached to the value
+    public override init(value: Double, xIndex: Int, label: String)
+    {
+        super.init(value: value, xIndex: xIndex, label: label)
+    }
+    
     /// Constructor for stacked bar entries.
     public init(values: [Double], xIndex: Int, label: String)
     {

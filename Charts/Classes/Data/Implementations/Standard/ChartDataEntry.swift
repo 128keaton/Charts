@@ -25,6 +25,8 @@ public class ChartDataEntry: NSObject
     /// optional spot for additional data this Entry represents
     public var data: AnyObject?
     
+    public var label: String?
+    
     public override required init()
     {
         super.init()
@@ -36,6 +38,15 @@ public class ChartDataEntry: NSObject
         
         self.value = value
         self.xIndex = xIndex
+    }
+    
+    public init(value: Double, xIndex: Int, label: String)
+    {
+        super.init()
+        
+        self.value = value
+        self.xIndex = xIndex
+        self.label = label
     }
     
     public init(value: Double, xIndex: Int, data: AnyObject?)
@@ -71,6 +82,11 @@ public class ChartDataEntry: NSObject
             return false
         }
         
+        if (object!.label != label)
+        {
+            return false
+        }
+        
         if (fabs(object!.value - value) > 0.00001)
         {
             return false
@@ -95,6 +111,7 @@ public class ChartDataEntry: NSObject
         copy.value = value
         copy.xIndex = xIndex
         copy.data = data
+        copy.label = label
         
         return copy
     }
@@ -118,6 +135,11 @@ public func ==(lhs: ChartDataEntry, rhs: ChartDataEntry) -> Bool
     }
     
     if (lhs.xIndex != rhs.xIndex)
+    {
+        return false
+    }
+    
+    if (lhs.label != rhs.label)
     {
         return false
     }
