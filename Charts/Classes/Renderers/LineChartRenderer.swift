@@ -23,6 +23,7 @@ public class LineChartRenderer: LineRadarChartRenderer
 {
     public weak var dataProvider: LineChartDataProvider?
     
+    public let phaseMulti: CGFloat? = 6.0
     public init(dataProvider: LineChartDataProvider?, animator: ChartAnimator?, viewPortHandler: ChartViewPortHandler)
     {
         super.init(animator: animator, viewPortHandler: viewPortHandler)
@@ -105,9 +106,11 @@ public class LineChartRenderer: LineRadarChartRenderer
         let diff = (entryFrom == entryTo) ? 1 : 0
         let minx = max(dataSet.entryIndex(entry: entryFrom) - diff - 1, 0)
         let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entryCount)
+        // mark experimental
         
         let phaseX = max(0.0, min(1.0, animator.phaseX))
-        let phaseY = animator.phaseY
+        
+        let phaseY = animator.phaseY - phaseMulti!
         
         // get the color that is specified for this position from the DataSet
         let drawingColor = dataSet.colors.first!
@@ -199,7 +202,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entryCount)
         
         let phaseX = max(0.0, min(1.0, animator.phaseX))
-        let phaseY = animator.phaseY
+        let phaseY = animator.phaseY  - phaseMulti!
         
         // get the color that is specified for this position from the DataSet
         let drawingColor = dataSet.colors.first!
@@ -270,7 +273,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         // What we need to draw is line from points of the xIndexes - not arbitrary entry indexes!
         let xTo = dataSet.entryForIndex(to - 1)?.xIndex ?? 0
         let xFrom = dataSet.entryForIndex(from)?.xIndex ?? 0
-
+        
         var pt1 = CGPoint(x: CGFloat(xTo), y: fillMin)
         var pt2 = CGPoint(x: CGFloat(xFrom), y: fillMin)
         pt1 = CGPointApplyAffineTransform(pt1, matrix)
@@ -306,8 +309,8 @@ public class LineChartRenderer: LineRadarChartRenderer
         let pointsPerEntryPair = isDrawSteppedEnabled ? 4 : 2
         
         let phaseX = max(0.0, min(1.0, animator.phaseX))
-        let phaseY = animator.phaseY
-
+        let phaseY = animator.phaseY  - phaseMulti!
+        
         guard let
             entryFrom = dataSet.entryForXIndex(self.minX < 0 ? 0 : self.minX, rounding: .Down),
             entryTo = dataSet.entryForXIndex(self.maxX, rounding: .Up)
@@ -325,7 +328,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         CGContextSaveGState(context)
         
         CGContextSetLineCap(context, dataSet.lineCapType)
-
+        
         // more than 1 color
         if (dataSet.colors.count > 1)
         {
@@ -370,7 +373,7 @@ public class LineChartRenderer: LineRadarChartRenderer
                 {
                     _lineSegments[1] = _lineSegments[0]
                 }
-
+                
                 for i in 0..<_lineSegments.count
                 {
                     _lineSegments[i] = CGPointApplyAffineTransform(_lineSegments[i], valueToPixelMatrix)
@@ -547,7 +550,7 @@ public class LineChartRenderer: LineRadarChartRenderer
             var dataSets = lineData.dataSets
             
             let phaseX = max(0.0, min(1.0, animator.phaseX))
-            let phaseY = animator.phaseY
+            let phaseY = animator.phaseY  - phaseMulti!
             
             var pt = CGPoint()
             
@@ -610,12 +613,12 @@ public class LineChartRenderer: LineRadarChartRenderer
                     }
                     
                     ChartUtils.drawText(context: context,
-                        text: formatter.stringFromNumber(e.value)!,
-                        point: CGPoint(
-                            x: pt.x,
-                            y: pt.y - CGFloat(valOffset) - valueFont.lineHeight),
-                        align: .Center,
-                        attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)])
+                                        text: formatter.stringFromNumber(e.value)!,
+                                        point: CGPoint(
+                                            x: pt.x,
+                                            y: pt.y - CGFloat(valOffset) - valueFont.lineHeight),
+                                        align: .Center,
+                                        attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)])
                 }
             }
         }
@@ -635,7 +638,7 @@ public class LineChartRenderer: LineRadarChartRenderer
             else { return }
         
         let phaseX = max(0.0, min(1.0, animator.phaseX))
-        let phaseY = animator.phaseY
+        let phaseY = animator.phaseY - phaseMulti!
         
         let dataSets = lineData.dataSets
         
@@ -687,7 +690,7 @@ public class LineChartRenderer: LineRadarChartRenderer
             for j in minx.stride(to: Int(ceil(CGFloat(maxx - minx) * phaseX + CGFloat(minx))), by: 1)
             {
                 guard let e = dataSet.entryForIndex(j) else { break }
-
+                
                 pt.x = CGFloat(e.xIndex)
                 pt.y = CGFloat(e.value) * phaseY
                 pt = CGPointApplyAffineTransform(pt, valueToPixelMatrix)
@@ -729,7 +732,7 @@ public class LineChartRenderer: LineRadarChartRenderer
                     if drawCircleHole
                     {
                         CGContextSetFillColorWithColor(context, dataSet.circleHoleColor!.CGColor)
-                     
+                        
                         // The hole rect
                         rect.origin.x = pt.x - circleHoleRadius
                         rect.origin.y = pt.y - circleHoleRadius

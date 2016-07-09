@@ -38,7 +38,7 @@ public class ChartAnimator: NSObject
     public var phaseX: CGFloat = 1.0
     
     /// the phase that is animated and influences the drawn values on the y-axis
-    public var phaseY: CGFloat = 1.0
+    public var phaseY: CGFloat = 8.0
     
     private var _startTimeX: NSTimeInterval = 0.0
     private var _startTimeY: NSTimeInterval = 0.0
@@ -78,10 +78,10 @@ public class ChartAnimator: NSObject
             _enabledY = false
             
             // If we stopped an animation in the middle, we do not want to leave it like this
-            if phaseX != 1.0 || phaseY != 1.0
+            if phaseX != 1.0 || phaseY != 8.0
             {
                 phaseX = 1.0
-                phaseY = 1.0
+                phaseY = 8.0
                 
                 if (delegate != nil)
                 {
